@@ -44,61 +44,34 @@ def solve(input_str):
     print(res)
     
     res = 0
-    for idx, line in enumerate(string_arr):
-        for match in re.finditer(r"\*", line):
-            # check that above and below don't have
-            i, _ = match.span()
-
-            number_of_digits = 0
-            dig_dir = []
-            for xx, yy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-                if 0 <= idx + xx < len(string_arr) and 0 <= i + yy < len(line):
-                    if string_arr[idx + xx][i + yy].isnumeric():
-                        number_of_digits += 1
-                        dig_dir.append((xx, yy))
-
-            if number_of_digits > 2:
-                continue
-            # then check diagonal directions
-            # bottom directions
-            if (1, 0) not in dig_dir:
-                for xx, yy in [(1, 1), (1, -1)]:
-                    if 0 <= idx + xx < len(string_arr) and 0 <= i + yy < len(line):
-                        if string_arr[idx + xx][i + yy].isnumeric():
-                            number_of_digits += 1
-                            dig_dir.append((xx, yy))
-
-            if (-1, 0) not in dig_dir:
-                for xx, yy in [(-1, 1), (-1, -1)]:
-                    if 0 <= idx + xx < len(string_arr) and 0 <= i + yy < len(line):
-                        if string_arr[idx + xx][i + yy].isnumeric():
-                            number_of_digits += 1
-                            dig_dir.append((xx, yy))
-
-            if number_of_digits != 2:
+    for i, line in enumerate(string_arr):
+        for j, c in enumerate(line):
+            if c != "*":
                 continue
 
-            nums = [None, None]
-            print(dig_dir)
-            for k, (xx, yy) in enumerate(dig_dir):
-                start = string_arr[idx + xx][i + yy]
-                num = start
-                t = 1
-                while i + yy + t < len(line) and string_arr[idx + xx][i + yy + t].isnumeric():
-                    print(string_arr[idx + xx][i + yy + t])
-                    num += string_arr[idx + xx][i + yy + t]
-                    t += 1
+            candidates = []
+            for ii, jj in [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, -1), (-1, 1)]:
+                if 0 <= i + ii < len(string_arr) and 0 <= j + jj < len(line):
+                    if string_arr[i + ii][j + jj].isnumeric():
+                        t = 1
+                        start = string_arr[i + ii][j + jj]
+                        while j + jj + t < len(line) and string_arr[i + ii][j + jj + t].isnumeric():
+                            start = start + string_arr[i + ii][j + jj + t]
+                            t += 1
+                        r = j + jj + t - 1
 
-                t = -1
-                while i + yy + t < len(line) and string_arr[idx + xx][i + yy + t].isnumeric():
-                    print(string_arr[idx + xx][i + yy + t])
-                    num = string_arr[idx + xx][i + yy + t] + num
-                    t -= 1
-                nums[k] = num
+                        t = -1
+                        while j + jj + t >= 0 and string_arr[i + ii][j + jj + t].isnumeric():
+                            start = string_arr[i + ii][j + jj + t] + start
+                            t -= 1
+                        l = j + jj + t + 1
+                        candidates.append((start, l, r, i + ii))
+            candidates = list(set(candidates))
+            if len(candidates) == 2:
+                res += int(candidates[0][0]) * int(candidates[1][0])
 
-            print(nums)
-            res += (int(nums[1]) * int(nums[0]))
 
+     
 
 
 
